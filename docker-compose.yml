@@ -1,0 +1,25 @@
+﻿services:
+  pipemanager.web:
+    container_name: pipe_manager
+    image: pipemanager.web
+    build:
+      context: .
+      dockerfile: PipeManager.Web/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+        - db
+
+  db:
+    container_name: db_pg_pipes
+    image: postgres:latest
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:
