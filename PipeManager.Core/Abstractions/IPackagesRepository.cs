@@ -9,5 +9,6 @@ namespace PipeManager.Core.Abstractions
         Task<List<Package>> Get();
         Task<Package> GetById(Guid id);
         Task<Guid> Update(Guid id, string number, DateTime date);
+        Task<bool> HasPipes(Guid packageId);
     }
 }

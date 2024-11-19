@@ -1,7 +1,15 @@
-﻿namespace PipeManager.Core.Contracts.Requests;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-public record PackageRequest
+namespace PipeManager.Core.Contracts.Requests
 {
-    public string Number { get; init; } // Номер пакета
-    public DateTime Date { get; init; } // Дата создания или регистрации пакета
+    public record PackageRequest(
+        [Required(ErrorMessage = "Number is required.")]
+        [StringLength(100, ErrorMessage = "Number cannot exceed 100 characters.")]
+        string Number, // Номер пакета
+
+        [Required(ErrorMessage = "Date is required.")]
+        [DataType(DataType.Date, ErrorMessage = "Invalid date format.")]
+        DateTime Date // Дата создания или регистрации пакета
+    );
 }

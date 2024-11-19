@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PipeManager.Core.Models;
 using PipeManager.DataAccess.Entites;
 
 namespace PipeManager.DataAccess.Configurations
@@ -11,7 +12,7 @@ namespace PipeManager.DataAccess.Configurations
             builder.HasKey(x => x.Id);
 
             builder.Property(p => p.Number)
-                .HasMaxLength(50)  // Максимальная длина для номера пакета
+                .HasMaxLength(Package.MAX_NUMBER_LENGTH)  // Максимальная длина для номера пакета
                 .IsRequired();
 
             builder.Property(p => p.Date)

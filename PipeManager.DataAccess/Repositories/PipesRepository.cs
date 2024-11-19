@@ -86,14 +86,49 @@ public class PipesRepository : IPipesRepository
         return id;
     }
 
-    // Метод для проверки существования SteelGrade
     public async Task<bool> SteelGradeExists(Guid steelGradeId)
     {
         return await _context.SteelGrades.AnyAsync(sg => sg.Id == steelGradeId);
     }
 
-    #region NotImplemented
-    
+
+    public async Task<List<Pipe>> GetFilteredPipes(PipeFilter filter)
+    {
+        var query = _context.Pipes
+            .AsNoTracking()
+            .Include(p => p.SteelGrade)
+            .Include(p => p.Package)
+            .AsQueryable();
+
+        if (filter.SteelGradeId.HasValue)
+        {
+            query = query.Where(p => p.SteelGradeId == filter.SteelGradeId.Value);
+        }
+
+        if (filter.IsGood.HasValue)
+        {
+            query = query.Where(p => p.IsGood == filter.IsGood.Value);
+        }
+
+        if (filter.MinWeight.HasValue)
+        {
+            query = query.Where(p => p.Weight >= filter.MinWeight.Value);
+        }
+
+        if (filter.MaxWeight.HasValue)
+        {
+            query = query.Where(p => p.Weight <= filter.MaxWeight.Value);
+        }
+
+        if (filter.PackageId.HasValue)
+        {
+            query = query.Where(p => p.PackageId == filter.PackageId.Value);
+        }
+
+        var pipeEntities = await query.ToListAsync();
+        return pipeEntities.Select(MapToModel).ToList();
+    }
+
     public async Task<PipeStatistics> GetStatistics()
     {
         var totalCount = await _context.Pipes.CountAsync();
@@ -110,91 +145,63 @@ public class PipesRepository : IPipesRepository
         };
     }
 
-
-    public async Task<List<Pipe>> FilterPipes(bool? isGood = null, Guid? steelGradeId = null, decimal? minDiameter = null,
-        decimal? maxDiameter = null, decimal? minWeight = null, decimal? maxWeight = null)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<bool> IsPipeInPackage(Guid pipeId)
     {
-        var pipe = await _context.Pipes
+        return await _context.Pipes
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == pipeId);
-
-        return pipe.PackageId.HasValue; // Возвращает true, если PackageId не null
-    }
-
-
-    public async Task AddPipeToPackage(Guid pipeId, Guid packageId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task RemovePipeFromPackage(Guid pipeId)
-    {
-        throw new NotImplementedException();
+            .AnyAsync(p => p.Id == pipeId && p.PackageId.HasValue);
     }
 
     public async Task<List<Pipe>> GetPipesInPackage(Guid packageId)
     {
-        throw new NotImplementedException();
+        var entities = await _context.Pipes
+            .AsNoTracking()
+            .Where(p => p.PackageId == packageId)
+            .Include(p => p.SteelGrade)
+            .ToListAsync();
+
+        return entities.Select(MapToModel).ToList();
     }
 
-    public async Task<int> CountPipesByQuality(bool isGood)
+    public async Task<bool> PackageExists(Guid packageId)
     {
-        throw new NotImplementedException();
+        return await _context.Packages.AnyAsync(p => p.Id == packageId);
     }
-    #endregion
-    
+
+
     private Pipe MapToModel(PipeEntity entity)
     {
-        if (entity == null)
-        {
-            throw new ArgumentNullException(nameof(entity), "PipeEntity cannot be null.");
-        }
-        // Создание объекта Pipe с использованием статического метода Create
-        var pipeResult = Pipe.Create(
-            entity.Id,
-            entity.Label,
-            entity.IsGood,
-            entity.SteelGradeId,
-            entity.Diameter,
-            entity.Length,
-            entity.Weight
-        );
-
+        var pipeResult = Pipe.Create(entity.Id, entity.Label, entity.IsGood, entity.SteelGradeId, entity.Diameter, entity.Length, entity.Weight);
         if (!pipeResult.IsSuccess)
         {
             throw new InvalidOperationException(pipeResult.Error);
         }
 
         var pipe = pipeResult.Value;
-        pipe.PackageId = entity.PackageId;
-        
-        var steelGradeResult = SteelGrade.Create(entity.SteelGrade.Id, entity.SteelGrade.Name);
 
-        if (!steelGradeResult.IsSuccess)
+        if (entity.SteelGrade != null)
         {
-            throw new InvalidOperationException(steelGradeResult.Error);
+            var steelGradeResult = SteelGrade.Create(entity.SteelGrade.Id, entity.SteelGrade.Name);
+            if (!steelGradeResult.IsSuccess)
+            {
+                throw new InvalidOperationException(steelGradeResult.Error);
+            }
+
+            pipe.SteelGrade = steelGradeResult.Value;
         }
 
-        pipe.SteelGrade = steelGradeResult.Value;
-        
-        if (entity.Package == null) return pipe;
-        
-        var packageResult = Package.Create(entity.Package.Id, entity.Package.Number, entity.Package.Date);
-
-        if (!packageResult.IsSuccess)
+        if (entity.Package != null)
         {
-            throw new InvalidOperationException(packageResult.Error);
-        }
+            var packageResult = Package.Create(entity.Package.Id, entity.Package.Number, entity.Package.Date);
+            if (!packageResult.IsSuccess)
+            {
+                throw new InvalidOperationException(packageResult.Error);
+            }
 
-        pipe.Package = packageResult.Value;
+            pipe.Package = packageResult.Value;
+            pipe.PackageId = packageResult.Value.Id;
+        }
 
         return pipe;
     }
-
-
 }

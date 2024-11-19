@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PipeManager.Core.Models;
 using PipeManager.DataAccess.Entites;
 
 namespace PipeManager.DataAccess.Configurations
@@ -8,16 +9,19 @@ namespace PipeManager.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<SteelGradeEntity> builder)
         {
+// Первичный ключ
             builder.HasKey(x => x.Id);
 
+            // Свойство Name
             builder.Property(sg => sg.Name)
-                //todo add max lentgth to steelGradeClass
-                .HasMaxLength(100)  // Максимальная длина для имени марки стали
+                .HasMaxLength(SteelGrade.MAX_NAME_LENGTH) 
                 .IsRequired();
 
-            builder.HasMany(sg => sg.Pipes)  // Связь с трубами
+            // Связь с PipeEntity (один ко многим)
+            builder.HasMany(sg => sg.Pipes)
                 .WithOne(p => p.SteelGrade)
-                .HasForeignKey(p => p.SteelGradeId);
+                .HasForeignKey(p => p.SteelGradeId)
+                .OnDelete(DeleteBehavior.Restrict); // Отключить каскадное удаление
         }
     }
 }

@@ -1,6 +1,10 @@
-﻿namespace PipeManager.Core.Contracts.Requests;
+﻿using System.ComponentModel.DataAnnotations;
 
-public record AddPipesRequest
+namespace PipeManager.Core.Contracts.Requests
 {
-    public List<Guid> PipeIds { get; set; }
+    public record AddPipesRequest(
+        [Required(ErrorMessage = "PipeIds are required.")]
+        [MinLength(1, ErrorMessage = "At least one PipeId must be provided.")]
+        List<Guid> PipeIds // Список идентификаторов труб
+    );
 }

@@ -12,11 +12,13 @@ namespace PipeManager.Web.Controllers
     public class PipesController : ControllerBase
     {
         private readonly IPipesService _pipesService;
+        private readonly IPackagesService _packagesService;
         private readonly IMapper _mapper;
 
-        public PipesController(IPipesService pipesService, IMapper mapper)
+        public PipesController(IPipesService pipesService, IPackagesService packagesService, IMapper mapper)
         {
             _pipesService = pipesService;
+            _packagesService = packagesService;
             _mapper = mapper;
         }
 
@@ -25,7 +27,12 @@ namespace PipeManager.Web.Controllers
         public async Task<ActionResult<List<PipeResponse>>> GetAllPipes()
         {
             var pipes = await _pipesService.GetAllPipes();
-            var response = _mapper.Map<List<PipeResponse>>(pipes); // Преобразование списка Pipe в список PipeResponse
+            if (!pipes.Any())
+            {
+                return NoContent();
+            }
+
+            var response = _mapper.Map<List<PipeResponse>>(pipes);
             return Ok(response);
         }
 
@@ -33,16 +40,14 @@ namespace PipeManager.Web.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PipeResponse>> GetPipeById(Guid id)
         {
-            try
+            if (id == Guid.Empty)
             {
-                var pipe = await _pipesService.GetPipeById(id);
-                var response = _mapper.Map<PipeResponse>(pipe); // Преобразование Pipe в PipeResponse
-                return Ok(response);
+                return BadRequest("Invalid pipe ID.");
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Pipe with ID {id} not found.");
-            }
+
+            var pipe = await _pipesService.GetPipeById(id);
+            var response = _mapper.Map<PipeResponse>(pipe);
+            return Ok(response);
         }
 
         // POST: api/Pipes
@@ -54,55 +59,62 @@ namespace PipeManager.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Маппинг PipeRequest на Pipe с добавлением сгенерированного Id
-            var pipe = _mapper.Map<Pipe>(request);
-            pipe.Id = Guid.NewGuid(); // Генерация нового Id для Pipe
+            // if (request.PackageId is not null)
+            // {
+            //     var package = await _packagesService.GetPackageById(request.PackageId.Value);
+            //
+            //     if (package is null)
+            //     {
+            //         return BadRequest("Invalid package ID.");
+            //     }
+            // }
 
+            // Маппинг из PipeRequest в Pipe с генерацией нового ID
+            var pipe = _mapper.Map<Pipe>(request);
+    
             var pipeId = await _pipesService.CreatePipe(pipe);
             return CreatedAtAction(nameof(GetPipeById), new { id = pipeId }, pipeId);
         }
+
 
         // PUT: api/Pipes/{id}
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdatePipe(Guid id, [FromBody] PipeRequest request)
         {
+            if (id == Guid.Empty)
+            {
+                return BadRequest("Invalid pipe ID.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                await _pipesService.UpdatePipe(id, request.Label, request.IsGood, request.Diameter, request.Length, request.Weight, request.SteelGradeId, request.PackageId);
-                return NoContent();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Pipe with ID {id} not found.");
-            }
+            await _pipesService.UpdatePipe(
+                id,
+                request.Label,
+                request.IsGood,
+                request.Diameter,
+                request.Length,
+                request.Weight,
+                request.SteelGradeId,
+                request.PackageId);
+
+            return NoContent();
         }
 
         // DELETE: api/Pipes/{id}
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeletePipe(Guid id)
         {
-            try
+            if (id == Guid.Empty)
             {
-                await _pipesService.DeletePipe(id);
-                return NoContent();
+                return BadRequest("Invalid pipe ID.");
             }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Pipe with ID {id} not found.");
-            }
+
+            await _pipesService.DeletePipe(id);
+            return NoContent();
         }
 
         // GET: api/Pipes/statistics
@@ -110,7 +122,35 @@ namespace PipeManager.Web.Controllers
         public async Task<ActionResult<PipeStatistics>> GetStatistics()
         {
             var statistics = await _pipesService.GetStatistics();
-            return Ok(statistics);
+            return statistics == null ? NoContent() : Ok(statistics);
+        }
+
+        // GET: api/Pipes/filter
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<PipeResponse>>> FilterPipes(
+            [FromQuery] Guid? steelGradeId,
+            [FromQuery] bool? isGood,
+            [FromQuery] decimal? minWeight,
+            [FromQuery] decimal? maxWeight,
+            [FromQuery] Guid? packageId)
+        {
+            var filters = new PipeFilter
+            {
+                SteelGradeId = steelGradeId,
+                IsGood = isGood,
+                MinWeight = minWeight,
+                MaxWeight = maxWeight,
+                PackageId = packageId
+            };
+
+            var pipes = await _pipesService.FilterPipes(filters);
+            if (!pipes.Any())
+            {
+                return NoContent();
+            }
+
+            var response = _mapper.Map<List<PipeResponse>>(pipes);
+            return Ok(response);
         }
     }
 }

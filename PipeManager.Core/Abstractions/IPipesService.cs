@@ -10,4 +10,5 @@ public interface IPipesService
     Task<Pipe> GetPipeById(Guid id);
     Task<Guid> UpdatePipe(Guid id, string label, bool isGood, decimal diameter, decimal length, decimal weight, Guid? steelGradeId, Guid? packageId);
     Task<PipeStatistics> GetStatistics();
+    Task<List<Pipe>> FilterPipes(PipeFilter filter);
 }

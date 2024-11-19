@@ -4,7 +4,7 @@ namespace PipeManager.Core.Models
 {
     public class SteelGrade
     {
-        public const int MAX_NAME_LENGTH = 100;
+        public const int MAX_NAME_LENGTH = 50;
         public Guid Id { get; private set; }
         public string Name { get; private set; }
 

@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\PipeManager.Core\PipeManager.Core.csproj" />
+      <ProjectReference Include="..\PipeManager.DataAccess\PipeManager.DataAccess.csproj" />
     </ItemGroup>
 
 </Project>

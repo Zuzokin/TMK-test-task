@@ -14,7 +14,15 @@ public class SteelGradesService : ISteelGradesService
 
     public async Task<Guid> CreateSteelGrade(SteelGrade steelGrade)
     {
-        return await _steelGradesRepository.Create(steelGrade);
+        // Создание SteelGrade через Create с проверкой на ошибки
+        var steelGradeResult = SteelGrade.Create(Guid.NewGuid(), steelGrade.Name);
+
+        if (!steelGradeResult.IsSuccess)
+        {
+            throw new InvalidOperationException(steelGradeResult.Error);
+        }
+
+        return await _steelGradesRepository.Create(steelGradeResult.Value);
     }
 
     public async Task<Guid> DeleteSteelGrade(Guid id)
@@ -24,18 +32,13 @@ public class SteelGradesService : ISteelGradesService
 
     public async Task<List<SteelGrade>> GetAllSteelGrades()
     {
-        return await _steelGradesRepository.Get();
+        var steelGrades = await _steelGradesRepository.Get();
+        return steelGrades ?? new List<SteelGrade>();
     }
 
     public async Task<SteelGrade> GetSteelGradeById(Guid id)
     {
-        var steelGrade = await _steelGradesRepository.GetById(id);
-        //todo getbyid возращает ошибку, а не null, переделать
-        if (steelGrade == null)
-        {
-            throw new KeyNotFoundException("Steel grade not found.");
-        }
-        return steelGrade;
+        return await _steelGradesRepository.GetById(id);
     }
 
     public async Task<Guid> UpdateSteelGrade(Guid id, string name)

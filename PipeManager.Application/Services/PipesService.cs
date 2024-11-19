@@ -5,65 +5,75 @@ namespace PipeManager.Application.Services;
 
 public class PipesService : IPipesService
 {
-    private readonly IPipesRepository _pipesesRepository;
+    private readonly IPipesRepository _pipesRepository;
 
-    public PipesService(IPipesRepository pipesesRepository)
+    public PipesService(IPipesRepository pipesRepository)
     {
-        _pipesesRepository = pipesesRepository;
+        _pipesRepository = pipesRepository;
     }
 
     public async Task<Guid> CreatePipe(Pipe pipe)
     {
-        // Проверка на существование SteelGrade с указанным SteelGradeId
-        var steelGradeExists = await _pipesesRepository.SteelGradeExists(pipe.SteelGradeId);
-        if (!steelGradeExists)
+        if (!await _pipesRepository.SteelGradeExists(pipe.SteelGradeId))
         {
             throw new InvalidOperationException("The specified SteelGradeId does not exist.");
         }
-        return await _pipesesRepository.Create(pipe);
+        
+        // Если PackageId указан, проверяем, существует ли указанный PackageId
+        if (pipe.PackageId.HasValue && !await _pipesRepository.PackageExists(pipe.PackageId.Value))
+        {
+            throw new InvalidOperationException("The specified PackageId does not exist.");
+        }
+
+        return await _pipesRepository.Create(pipe);
     }
 
     public async Task<Guid> DeletePipe(Guid id)
     {
-        // Проверка, что труба не находится в пакете перед удалением
-        bool isInPackage = await _pipesesRepository.IsPipeInPackage(id);
-        if (isInPackage)
+        if (await _pipesRepository.IsPipeInPackage(id))
         {
             throw new InvalidOperationException("Cannot delete a pipe that is part of a package.");
         }
 
-        return await _pipesesRepository.Delete(id);
+        return await _pipesRepository.Delete(id);
     }
 
     public async Task<List<Pipe>> GetAllPipes()
     {
-        return await _pipesesRepository.Get();
+        var pipes = await _pipesRepository.Get();
+        return pipes ?? new List<Pipe>();
     }
 
     public async Task<Pipe> GetPipeById(Guid id)
     {
-        var pipe = await _pipesesRepository.GetById(id);
-        if (pipe == null)
-        {
-            throw new KeyNotFoundException("Pipe not found.");
-        }
-        return pipe;
+        return await _pipesRepository.GetById(id);
     }
 
-    public async Task<Guid> UpdatePipe(Guid id, string label, bool isGood, decimal diameter, decimal length, decimal weight, Guid? steelGradeId, Guid? packageId)
+    public async Task<Guid> UpdatePipe(
+        Guid id,
+        string label,
+        bool isGood,
+        decimal diameter,
+        decimal length,
+        decimal weight,
+        Guid? steelGradeId,
+        Guid? packageId)
     {
-        // Проверка, что труба не находится в пакете перед редактированием
-        bool isInPackage = await _pipesesRepository.IsPipeInPackage(id);
-        if (isInPackage)
+        if (await _pipesRepository.IsPipeInPackage(id))
         {
             throw new InvalidOperationException("Cannot update a pipe that is part of a package.");
         }
 
-        return await _pipesesRepository.Update(id, label, isGood, diameter, length, weight, steelGradeId, packageId);
+        return await _pipesRepository.Update(id, label, isGood, diameter, length, weight, steelGradeId, packageId);
     }
 
     public async Task<PipeStatistics> GetStatistics()
     {
-        return await _pipesesRepository.GetStatistics();
+        return await _pipesRepository.GetStatistics();
+    }
+
+    public async Task<List<Pipe>> FilterPipes(PipeFilter filter)
+    {
+        return await _pipesRepository.GetFilteredPipes(filter);
     }
 }

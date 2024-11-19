@@ -25,6 +25,11 @@ namespace PipeManager.Web.Controllers
         public async Task<ActionResult<List<SteelGradeResponse>>> GetAllSteelGrades()
         {
             var steelGrades = await _steelGradesService.GetAllSteelGrades();
+            if (!steelGrades.Any())
+            {
+                return NoContent();
+            }
+
             var response = _mapper.Map<List<SteelGradeResponse>>(steelGrades);
             return Ok(response);
         }
@@ -33,19 +38,12 @@ namespace PipeManager.Web.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SteelGradeResponse>> GetSteelGradeById(Guid id)
         {
-            try
-            {
-                var steelGrade = await _steelGradesService.GetSteelGradeById(id);
-                var response = _mapper.Map<SteelGradeResponse>(steelGrade);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Steel grade with ID {id} not found.");
-            }
+            var steelGrade = await _steelGradesService.GetSteelGradeById(id);
+            var response = _mapper.Map<SteelGradeResponse>(steelGrade);
+            return Ok(response);
         }
 
-        // POST: api/SteelGrades
+// POST: api/SteelGrades
         [HttpPost]
         public async Task<ActionResult<Guid>> CreateSteelGrade([FromBody] SteelGradeRequest request)
         {
@@ -53,56 +51,29 @@ namespace PipeManager.Web.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
-            var steelGradeResult = SteelGrade.Create(Guid.NewGuid(), request.Name);
-            if (!steelGradeResult.IsSuccess)
-            {
-                return BadRequest(steelGradeResult.Error);
-            }
 
-            var steelGradeId = await _steelGradesService.CreateSteelGrade(steelGradeResult.Value);
+            // Используем AutoMapper для преобразования из SteelGradeRequest в SteelGrade
+            var steelGrade = _mapper.Map<SteelGrade>(request);
+
+            var steelGradeId = await _steelGradesService.CreateSteelGrade(steelGrade);
             return CreatedAtAction(nameof(GetSteelGradeById), new { id = steelGradeId }, steelGradeId);
         }
+
 
         // PUT: api/SteelGrades/{id}
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateSteelGrade(Guid id, [FromBody] SteelGradeRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            // todo убрать create
-            var steelGradeResult = SteelGrade.Create(id, request.Name);
-            if (!steelGradeResult.IsSuccess)
-            {
-                return BadRequest(steelGradeResult.Error);
-            }
-
-            try
-            {
-                await _steelGradesService.UpdateSteelGrade(id, steelGradeResult.Value.Name);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Steel grade with ID {id} not found.");
-            }
+            await _steelGradesService.UpdateSteelGrade(id, request.Name);
+            return NoContent();
         }
 
         // DELETE: api/SteelGrades/{id}
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteSteelGrade(Guid id)
         {
-            try
-            {
-                await _steelGradesService.DeleteSteelGrade(id);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Steel grade with ID {id} not found.");
-            }
+            await _steelGradesService.DeleteSteelGrade(id);
+            return NoContent();
         }
     }
 }

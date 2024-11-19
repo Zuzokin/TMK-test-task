@@ -1,14 +1,28 @@
-﻿namespace PipeManager.Core.Contracts.Requests;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-public record PipeRequest
+namespace PipeManager.Core.Contracts.Requests
 {
-    public string Label { get; init; } // Название или номер трубы
-    public bool IsGood { get; init; } // Качество (годная или брак)
-    public decimal Diameter { get; init; } // Диаметр трубы
-    public decimal Length { get; init; } // Длина трубы
-    public decimal Weight { get; init; } // Вес трубы
+    public record PipeRequest(
+        [Required(ErrorMessage = "Label is required.")]
+        [StringLength(100, ErrorMessage = "Label cannot exceed 100 characters.")]
+        string Label, // Название или номер трубы
 
-    // Связанные идентификаторы
-    public Guid SteelGradeId { get; init; } // Идентификатор марки стали
-    public Guid? PackageId { get; init; } // Идентификатор пакета (необязательно, если труба не в пакете)
+        [Required(ErrorMessage = "Quality (IsGood) is required.")]
+        bool IsGood, // Качество (годная или брак)
+
+        [Range(1, double.MaxValue, ErrorMessage = "Diameter must be greater than 0.")]
+        decimal Diameter, // Диаметр трубы
+
+        [Range(1, double.MaxValue, ErrorMessage = "Length must be greater than 0.")]
+        decimal Length, // Длина трубы
+
+        [Range(1, double.MaxValue, ErrorMessage = "Weight must be greater than 0.")]
+        decimal Weight, // Вес трубы
+
+        [Required(ErrorMessage = "SteelGradeId is required.")]
+        Guid SteelGradeId, // Идентификатор марки стали
+
+        Guid? PackageId // Идентификатор пакета (необязательно, если труба не в пакете)
+    );
 }

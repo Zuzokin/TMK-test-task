@@ -5,5 +5,5 @@ namespace PipeManager.Core.Abstractions;
 public interface IUsersRepository
 {
     Task Add(User user);
-    Task<User> GetByEmail(string email);
+    Task<Result<User>> GetByEmail(string email);
 }
