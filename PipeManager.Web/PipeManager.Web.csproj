@@ -10,6 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
@@ -23,6 +24,7 @@
     <ItemGroup>
       <ProjectReference Include="..\PipeManager.Application\PipeManager.Application.csproj" />
       <ProjectReference Include="..\PipeManager.DataAccess\PipeManager.DataAccess.csproj" />
+      <ProjectReference Include="..\PipeManager.Infrastructure\PipeManager.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>

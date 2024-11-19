@@ -50,7 +50,7 @@ public class PipesRepository : IPipesRepository
             .Include(p => p.Package)
             .ToListAsync();
 
-        return entities.Select(e => MapToModel(e)).ToList();
+        return entities.Select(MapToModel).ToList();
     }
 
     public async Task<Pipe> GetById(Guid id)
@@ -119,8 +119,13 @@ public class PipesRepository : IPipesRepository
 
     public async Task<bool> IsPipeInPackage(Guid pipeId)
     {
-        throw new NotImplementedException();
+        var pipe = await _context.Pipes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == pipeId);
+
+        return pipe.PackageId.HasValue; // Возвращает true, если PackageId не null
     }
+
 
     public async Task AddPipeToPackage(Guid pipeId, Guid packageId)
     {
@@ -145,6 +150,10 @@ public class PipesRepository : IPipesRepository
     
     private Pipe MapToModel(PipeEntity entity)
     {
+        if (entity == null)
+        {
+            throw new ArgumentNullException(nameof(entity), "PipeEntity cannot be null.");
+        }
         // Создание объекта Pipe с использованием статического метода Create
         var pipeResult = Pipe.Create(
             entity.Id,
@@ -172,6 +181,8 @@ public class PipesRepository : IPipesRepository
         }
 
         pipe.SteelGrade = steelGradeResult.Value;
+        
+        if (entity.Package == null) return pipe;
         
         var packageResult = Package.Create(entity.Package.Id, entity.Package.Number, entity.Package.Date);
 

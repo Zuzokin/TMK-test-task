@@ -18,6 +18,6 @@
         public decimal Weight { get; set; }
 
         public Guid? PackageId { get; set; }
-        public PackageEntity Package { get; set; }  // Навигационное свойство для связи с Package
+        public PackageEntity? Package { get; set; }  // Навигационное свойство для связи с Package
     }
 }

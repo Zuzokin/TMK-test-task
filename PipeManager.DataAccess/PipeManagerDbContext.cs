@@ -13,6 +13,7 @@ namespace PipeManager.DataAccess
         public DbSet<PipeEntity> Pipes { get; set; }
         public DbSet<SteelGradeEntity> SteelGrades { get; set; }
         public DbSet<PackageEntity> Packages { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +23,7 @@ namespace PipeManager.DataAccess
             modelBuilder.ApplyConfiguration(new PipesConfiguration());
             modelBuilder.ApplyConfiguration(new SteelGradesConfiguration());
             modelBuilder.ApplyConfiguration(new PackagesConfiguration());
+            modelBuilder.ApplyConfiguration(new UsersConfiguration());
         }
 
     }

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeManager.Core", "PipeMan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeManager.Application", "PipeManager.Application\PipeManager.Application.csproj", "{6371F31F-A190-4B4B-AF45-68A2480D75A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeManager.Infrastructure", "PipeManager.Infrastructure\PipeManager.Infrastructure.csproj", "{309F53D8-0A69-4D45-BEDA-4BE56496185F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{6371F31F-A190-4B4B-AF45-68A2480D75A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6371F31F-A190-4B4B-AF45-68A2480D75A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6371F31F-A190-4B4B-AF45-68A2480D75A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{309F53D8-0A69-4D45-BEDA-4BE56496185F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{309F53D8-0A69-4D45-BEDA-4BE56496185F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{309F53D8-0A69-4D45-BEDA-4BE56496185F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{309F53D8-0A69-4D45-BEDA-4BE56496185F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

@@ -9,4 +9,6 @@ public interface IPackagesService
     Task<List<Package>> GetAllPackages();
     Task<Package> GetPackageById(Guid id);
     Task<Guid> UpdatePackage(Guid id, string number, DateTime date);
+    Task<Result<Package>> AddPipesToPackage(Guid packageId, List<Guid> pipeIds);
+    Task<Result<Guid>> RemovePipeFromPackage(Guid packageId, Guid pipeId);
 }

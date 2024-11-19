@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PipeManager.Core.Abstractions;
 using PipeManager.Core.Contracts.Requests;
@@ -46,6 +47,7 @@ namespace PipeManager.Web.Controllers
         }
 
         // POST: api/Packages
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Guid>> CreatePackage([FromBody] PackageRequest request)
         {
@@ -109,5 +111,38 @@ namespace PipeManager.Web.Controllers
                 return NotFound($"Package with ID {id} not found.");
             }
         }
+        
+        [HttpPost("{packageId}/add-pipes")]
+        public async Task<IActionResult> AddPipesToPackage(Guid packageId, [FromBody] AddPipesRequest request)
+        {
+            if (!request.PipeIds.Any())
+            {
+                return BadRequest("Pipe IDs are required.");
+            }
+
+            var result = await _packagesService.AddPipesToPackage(packageId, request.PipeIds);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
+        }
+        
+        [HttpDelete("{packageId}/remove-pipe/{pipeId}")]
+        public async Task<IActionResult> RemovePipeFromPackage(Guid packageId, Guid pipeId)
+        {
+            var result = await _packagesService.RemovePipeFromPackage(packageId, pipeId);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Error);
+            }
+
+            return Ok();
+        }
+
+
     }
 }
