@@ -1,0 +1,36 @@
+{
+  "name": "tmk-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.5.1",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@hookform/resolvers": "^3.9.1",
+    "@mui/material": "^6.1.7",
+    "antd": "^5.22.1",
+    "axios": "^1.7.7",
+    "jwt-decode": "^4.0.0",
+    "next": "15.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.2",
+    "react-query": "^3.39.3",
+    "yup": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "postcss": "^8",
+    "sass": "^1.81.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}

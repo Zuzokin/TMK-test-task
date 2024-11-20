@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Цветовая схема по умолчанию */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #2563eb; /* Основной цвет (например, синий) */
+  --secondary: #4b5563; /* Второстепенный цвет (например, серый) */
+  --accent: #10b981; /* Акцентный цвет (например, зеленый) */
+}
+
+/* Цветовая схема для темного режима */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --primary: #3b82f6; /* Основной цвет для темного режима */
+    --secondary: #9ca3af; /* Второстепенный цвет для темного режима */
+    --accent: #22c55e; /* Акцентный цвет для темного режима */
+  }
+}
+
+/* Глобальные стили для тела страницы */
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Inter', Arial, Helvetica, sans-serif; /* Используем Inter или системные шрифты */
+  transition: color 0.2s ease, background 0.2s ease; /* Плавный переход между темами */
+}
+
+/* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  color: var(--foreground);
+}
+
+/* Ссылки */
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Карточки */
+.card {
+  background: var(--background);
+  border: 1px solid var(--secondary);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Кнопки */
+button {
+  background: var(--primary);
+  color: var(--foreground);
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: var(--accent);
+}
+
+button:disabled {
+  background: var(--secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
