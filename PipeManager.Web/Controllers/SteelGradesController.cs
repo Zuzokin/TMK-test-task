@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PipeManager.Core.Abstractions;
 using PipeManager.Core.Contracts.Requests;
@@ -9,6 +10,7 @@ namespace PipeManager.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SteelGradesController : ControllerBase
     {
         private readonly ISteelGradesService _steelGradesService;

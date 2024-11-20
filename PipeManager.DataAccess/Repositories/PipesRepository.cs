@@ -120,14 +120,42 @@ public class PipesRepository : IPipesRepository
             query = query.Where(p => p.Weight <= filter.MaxWeight.Value);
         }
 
-        if (filter.PackageId.HasValue)
+        if (filter.MinLength.HasValue)
         {
-            query = query.Where(p => p.PackageId == filter.PackageId.Value);
+            query = query.Where(p => p.Length >= filter.MinLength.Value);
+        }
+
+        if (filter.MaxLength.HasValue)
+        {
+            query = query.Where(p => p.Length <= filter.MaxLength.Value);
+        }
+
+        if (filter.MinDiameter.HasValue)
+        {
+            query = query.Where(p => p.Diameter >= filter.MinDiameter.Value);
+        }
+
+        if (filter.MaxDiameter.HasValue)
+        {
+            query = query.Where(p => p.Diameter <= filter.MaxDiameter.Value);
+        }
+
+        // Исключаем трубы, находящиеся в пакетах, если установлен флаг NotInPackage
+        if (filter.NotInPackage == true)
+        {
+            query = query.Where(p => p.PackageId == null);
+        }
+        
+        if (filter.NotInPackage == false)
+        {
+            query = query.Where(p => p.PackageId != null);
         }
 
         var pipeEntities = await query.ToListAsync();
         return pipeEntities.Select(MapToModel).ToList();
     }
+
+
 
     public async Task<PipeStatistics> GetStatistics()
     {

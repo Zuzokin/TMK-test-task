@@ -10,6 +10,7 @@ namespace PipeManager.Web.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class PackagesController : ControllerBase
 {
     private readonly IPackagesService _packagesService;
@@ -51,7 +52,6 @@ public class PackagesController : ControllerBase
     }
 
     // POST: api/Packages
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreatePackage([FromBody] PackageRequest request)
     {

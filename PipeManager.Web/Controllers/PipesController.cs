@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PipeManager.Core.Abstractions;
 using PipeManager.Core.Contracts.Requests;
@@ -9,6 +10,7 @@ namespace PipeManager.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PipesController : ControllerBase
     {
         private readonly IPipesService _pipesService;
@@ -118,6 +120,7 @@ namespace PipeManager.Web.Controllers
         }
 
         // GET: api/Pipes/statistics
+        [Authorize]
         [HttpGet("statistics")]
         public async Task<ActionResult<PipeStatistics>> GetStatistics()
         {
@@ -126,13 +129,18 @@ namespace PipeManager.Web.Controllers
         }
 
         // GET: api/Pipes/filter
+        [Authorize]
         [HttpGet("filter")]
         public async Task<ActionResult<List<PipeResponse>>> FilterPipes(
             [FromQuery] Guid? steelGradeId,
             [FromQuery] bool? isGood,
             [FromQuery] decimal? minWeight,
             [FromQuery] decimal? maxWeight,
-            [FromQuery] Guid? packageId)
+            [FromQuery] decimal? minLength,
+            [FromQuery] decimal? maxLength,
+            [FromQuery] decimal? minDiameter,
+            [FromQuery] decimal? maxDiameter,
+            [FromQuery] bool? notInPackage)
         {
             var filters = new PipeFilter
             {
@@ -140,10 +148,15 @@ namespace PipeManager.Web.Controllers
                 IsGood = isGood,
                 MinWeight = minWeight,
                 MaxWeight = maxWeight,
-                PackageId = packageId
+                MinLength = minLength,
+                MaxLength = maxLength,
+                MinDiameter = minDiameter,
+                MaxDiameter = maxDiameter,
+                NotInPackage = notInPackage
             };
 
             var pipes = await _pipesService.FilterPipes(filters);
+
             if (!pipes.Any())
             {
                 return NoContent();
@@ -152,5 +165,6 @@ namespace PipeManager.Web.Controllers
             var response = _mapper.Map<List<PipeResponse>>(pipes);
             return Ok(response);
         }
+
     }
 }

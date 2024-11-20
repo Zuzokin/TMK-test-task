@@ -45,14 +45,15 @@ public class UsersController : ControllerBase
         var token = await _usersService.Login(request.Email, request.Password);
 
         // Добавление JWT токена в куки
-        // HttpContext.Response.Cookies.Append("auth-token", token, new CookieOptions
+        // HttpContext.Response.Cookies.Append("tasty-cookies", token, new CookieOptions
         // {
         //     HttpOnly = true,
-        //     Secure = true,
-        //     SameSite = SameSiteMode.Strict
+        //     Secure = false,
+        //     SameSite = SameSiteMode.None
         // });        
         HttpContext.Response.Cookies.Append("tasty-cookies", token);
 
-        return Ok(new { Message = "Login successful." });
+        // Возвращаем токен в теле ответа
+        return Ok(new { token });
     }
 }

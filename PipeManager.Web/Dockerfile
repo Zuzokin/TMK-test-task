@@ -11,6 +11,7 @@ COPY ["PipeManager.Web/PipeManager.Web.csproj", "PipeManager.Web/"]
 COPY ["PipeManager.Application/PipeManager.Application.csproj", "PipeManager.Application/"]
 COPY ["PipeManager.Core/PipeManager.Core.csproj", "PipeManager.Core/"]
 COPY ["PipeManager.DataAccess/PipeManager.DataAccess.csproj", "PipeManager.DataAccess/"]
+COPY ["PipeManager.Infrastructure/PipeManager.Infrastructure.csproj", "PipeManager.Infrastructure/"]
 RUN dotnet restore "PipeManager.Web/PipeManager.Web.csproj"
 COPY . .
 WORKDIR "/src/PipeManager.Web"
