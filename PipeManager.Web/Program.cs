@@ -45,12 +45,16 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // URL фронтенда
+            policy.WithOrigins(
+                    "http://localhost:3000",   
+                    "http://frontend:3000"      
+                )
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
         });
 });
+
 
 var app = builder.Build();
 

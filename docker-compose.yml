@@ -8,7 +8,11 @@
     ports:
       - "8080:8080"
     depends_on:
-        - db
+      - db
+    volumes:
+      - ./PipeManager.Web:/app # Синхронизация исходного кода
+      - /app/bin               # Исключаем временные файлы сборки
+      - /app/obj
 
   db:
     container_name: db_pg_pipes
@@ -21,5 +25,19 @@
       POSTGRES_PASSWORD: postgres
     volumes:
       - db_data:/var/lib/postgresql/data
+
+  frontend:
+    container_name: pipe_manager_frontend
+    build:
+      context: ./tmk-frontend # Путь к папке с фронтендом
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - pipemanager.web
+    volumes:
+      - ./tmk-frontend:/app       # Синхронизация исходного кода
+      - /app/node_modules     # Исключаем зависимости
+
 volumes:
   db_data:
