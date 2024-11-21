@@ -47,8 +47,28 @@
 
 # Пример работы
 
-## Swagger
+Вот здесь лежит [**скринкаст**](https://drive.google.com/file/d/1h7CUd0aOvLlZ3huihcgv-YtYJsRkFdvx/view?usp=sharing)
 
+
+## Swagger
+![Пример изображения](images/swagger1.png)
+
+## Клиент
+
+### Вход
+![Пример изображения](images/вход.png)
+
+### Статистика
+![Пример изображения](images/статистика.png)
+
+### Марки стали
+![Пример изображения](images/сталь.png)
+
+### трубы
+![Пример изображения](images/трубы.png)
+
+### Пакеты
+![Пример изображения](images/пакеты.png)
 
 # Стэк приложения
 
@@ -98,7 +118,7 @@
 
 ## Запуск проекта
 
-### Инструкция
+### Инструкция для запуска 
 1. Клонируйте репозиторий:
    ```bash
    git clone https://github.com/Zuzokin/TMK-test-task.git
@@ -109,6 +129,8 @@
     docker-compose up --build
     ```
 3. Откройте сайт в браузере http://localhost:5000 или swagger http://localhost:8080/swagger/index.html
+
+
 
 
 
