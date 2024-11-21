@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:8080/api", // Backend в Docker доступен по порту 8080  http://localhost:5690/api "http://pipemanager.web:8080"
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api", // По умолчанию "http://localhost:8080/api"
   withCredentials: true, // Включаем передачу cookies
 });
 
