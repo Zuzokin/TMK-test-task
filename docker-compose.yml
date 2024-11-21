@@ -9,10 +9,6 @@
       - "8080:8080"
     depends_on:
       - db
-    volumes:
-      - ./PipeManager.Web:/app # Синхронизация исходного кода
-      - /app/bin               # Исключаем временные файлы сборки
-      - /app/obj
 
   db:
     container_name: db_pg_pipes
@@ -35,9 +31,6 @@
       - "3000:3000"
     depends_on:
       - pipemanager.web
-    volumes:
-      - ./tmk-frontend:/app       # Синхронизация исходного кода
-      - /app/node_modules     # Исключаем зависимости
 
 volumes:
   db_data:
