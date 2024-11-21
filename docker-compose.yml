@@ -3,8 +3,8 @@
     container_name: pipe_manager
     image: pipemanager.web
     build:
-      context: .
-      dockerfile: PipeManager.Web/Dockerfile
+      context: ./PipeManager.Web
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
@@ -25,12 +25,14 @@
   frontend:
     container_name: pipe_manager_frontend
     build:
-      context: ./tmk-frontend # Путь к папке с фронтендом
+      context: ./tmk-frontend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
       - pipemanager.web
+    environment:
+      NEXT_PUBLIC_API_URL: http://pipe_manager:8080 # URL для API
 
 volumes:
   db_data:
